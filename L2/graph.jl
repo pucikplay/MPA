@@ -1,4 +1,3 @@
-import Base.Order.lt
 
 struct Edge
     u::Int
@@ -6,14 +5,11 @@ struct Edge
     w::Float64
 end
 
-struct EdgeOrdering <: Base.Order.Ordering
-end
-
 struct Graph
     n::Int
     V::Vector{Int}
     E::Vector{Edge}
-    M::Matrix{Union{Nothing,Edge}}
+    M::Matrix{Float64}
 end
 
 struct Tree
@@ -24,21 +20,19 @@ end
 function genGraph(n::Int, dist::Function)
     vertices = Vector{Int}()
     edges = Vector{Edge}()
-    matrix = Matrix{Union{Nothing,Edge}}(undef,n,n)
-    fill!(matrix, nothing)
+    matrix = Matrix{Float64}(undef,n,n)
+    fill!(matrix, Inf)
     for i in 1:n
         push!(vertices, i)
         for j in i+1:n
             weight = dist()
             push!(edges, Edge(i,j,weight))
-            matrix[i,j] = Edge(i,j,weight)
-            matrix[j,i] = Edge(j,i,weight)
+            matrix[i,j] = weight
+            matrix[j,i] = weight
         end
     end
     return Graph(n, vertices, edges, matrix)
 end
-
-lt(e1::Edge, e2::Edge) = isless(e1.w, e2.w)
 
 function isInTree(t::Tree, v::Int)
     if v in t.V
@@ -53,7 +47,15 @@ function addEdge(t::Tree, e::Edge)
 end
 
 function getTreeWeight(t::Tree)
-    return sum(t.E[:].w)
+    return sum([e.w for e in t.E])
+end
+
+function getTreeSize(t::Tree)
+    return length(t.V)
+end
+
+function getTreeEdgeNumber(t::Tree)
+    return length(t.E)
 end
 
 function _graphFormat(g::Graph)
@@ -68,10 +70,10 @@ function _graphFormat(g::Graph)
     return _string
 end
 
-function treeFormat(t::Tree)
+function _treeFormat(t::Tree)
     _string = ""
-    for i in 1:g.n
-        _string *= "$(g.E[i])\n"
+    for i in 1:length(t.E)
+        _string *= "$(t.E[i])\n"
     end
     return _string
 end
