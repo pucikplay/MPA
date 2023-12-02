@@ -1,4 +1,3 @@
-
 struct Edge
     u::Int
     v::Int
@@ -56,6 +55,15 @@ end
 
 function getTreeEdgeNumber(t::Tree)
     return length(t.E)
+end
+
+function getAdjList(t::Tree)
+    adjList = [Vector{Int}() for _ in 1:getTreeSize(t)]
+    for e in t.E
+        push!(adjList[e.u], e.v)
+        push!(adjList[e.v], e.u)
+    end
+    return adjList
 end
 
 function _graphFormat(g::Graph)
