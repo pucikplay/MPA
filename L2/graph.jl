@@ -1,3 +1,4 @@
+# structs used in graph
 struct Edge
     u::Int
     v::Int
@@ -16,6 +17,7 @@ struct Tree
     V::Set{Int}
 end
 
+# generates a undirected clique graph with edge weights according to dist()
 function genGraph(n::Int, dist::Function)
     vertices = Vector{Int}()
     edges = Vector{Edge}()
@@ -33,6 +35,7 @@ function genGraph(n::Int, dist::Function)
     return Graph(n, vertices, edges, matrix)
 end
 
+# check if v is in tree
 function isInTree(t::Tree, v::Int)
     if v in t.V
         return true
@@ -40,23 +43,28 @@ function isInTree(t::Tree, v::Int)
     return false
 end
 
+# add edge to a tree
 function addEdge(t::Tree, e::Edge)
     push!(t.E, e)
     push!(t.V, e.v)
 end
 
+# sum edge weight of tree
 function getTreeWeight(t::Tree)
     return sum([e.w for e in t.E])
 end
 
+# get size of a tree
 function getTreeSize(t::Tree)
     return length(t.V)
 end
 
+# get no of edges in a tree
 function getTreeEdgeNumber(t::Tree)
     return length(t.E)
 end
 
+# return a tree in form of a adjacency list
 function getAdjList(t::Tree)
     adjList = [Vector{Int}() for _ in 1:getTreeSize(t)]
     for e in t.E
@@ -66,6 +74,7 @@ function getAdjList(t::Tree)
     return adjList
 end
 
+# display format functions
 function _graphFormat(g::Graph)
     _string = "$(g.n)\n"
     _string *= "$(g.V)\n"
