@@ -11,6 +11,7 @@ struct TREE
     nodes::Vector{Node}
 end
 
+# recursive function for adding vertices to tree
 function addToTree(v::Int, adjList::Array{Vector{Int}}, nodes::Vector{Node}, marked::Array{Bool})
     for u in adjList[v]
         if !marked[u]
@@ -23,6 +24,7 @@ function addToTree(v::Int, adjList::Array{Vector{Int}}, nodes::Vector{Node}, mar
     end
 end
 
+# transform tree from list of edges to linked nodes
 function treeTransform(t::Tree, v::Int, adjList::Array{Vector{Int}})
     n = getTreeSize(t)
     nodes = [Node(i, Vector{Int}()) for i in 1:n]
@@ -31,6 +33,7 @@ function treeTransform(t::Tree, v::Int, adjList::Array{Vector{Int}})
     return TREE(v, nodes)
 end
 
+# counting sort-like function calculating number of rounds based on nodes children
 function countSortCalc(arr::Array{Int})
     valMax = maximum(arr)
     countArr = zeros(valMax + length(arr))
@@ -52,6 +55,7 @@ function countSortCalc(arr::Array{Int})
     return idx - 1
 end
 
+# recursive function for calculating min no. of rounds
 function recCalcRounds(T::TREE, v::Int)
     if length(T.nodes[v].children) == 0
         return 0
