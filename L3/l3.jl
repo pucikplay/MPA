@@ -2,7 +2,6 @@ using Statistics
 using Base.Threads
 using TickTock
 using Distributions
-using DelimitedFiles
 using DataFrames
 using CSV
 include("propagation.jl")
