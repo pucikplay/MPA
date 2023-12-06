@@ -8,9 +8,9 @@ using CSV
 include("propagation.jl")
 
 nMin = 10
-nMax = 2000
+nMax = 3000
 step = 30
-reps = 100
+reps = 200
 
 N = [n for n in nMin:step:nMax]
 
