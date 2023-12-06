@@ -7,11 +7,16 @@ using CSV
 include("propagation.jl")
 
 nMin = 10
-nMax = 3000
+nMax = 1000
 step = 30
-reps = 200
+reps = 100
 
 N = [n for n in nMin:step:nMax]
+
+function myDist()
+    unif = rand()
+    return sin(unif * pi/2)^2
+end
 
 struct Record
     n::Int
@@ -24,7 +29,7 @@ Threads.@threads for n in N
     println(n)
     record = Record(n, Vector{Int}())
     for _ in 1:reps
-        graph = genGraph(n, rand)
+        graph = genGraph(n, myDist)
         tree = prim(graph)
         adjList = getAdjList(tree)
         for v in 1:n
@@ -54,4 +59,4 @@ data = reduce(hcat, [getStatistics(record) for record in records])
 
 stats = DataFrame(data', ["n", "min", "max", "mean", "exp", "chbshv", "kurt"])
 
-CSV.write("L3/data.csv", stats)
+CSV.write("L3/data_myDist.csv", stats)
