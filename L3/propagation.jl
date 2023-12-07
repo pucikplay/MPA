@@ -58,12 +58,14 @@ end
 # recursive function for calculating min no. of rounds
 function recCalcRounds(T::TREE, v::Int)
     if length(T.nodes[v].children) == 0
-        return 0
+        return (0,1)
     end
-    ch_rounds = [recCalcRounds(T, child) for child in T.nodes[v].children]
+    values = [recCalcRounds(T, child) for child in T.nodes[v].children]
+    ch_rounds = [value[1] for value in values]
+    depth = maximum([value[2] for value in values])
     valMax = countSortCalc(ch_rounds)
 
-    return valMax + 1
+    return (valMax + 1, depth + 1)
 end
 
 function calcRounds(T::TREE)
