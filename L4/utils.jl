@@ -56,6 +56,11 @@ function myDist()
     return sin(unif * pi/2)^2
 end
 
+d = Truncated(Normal(0, 1), 0, 1)
+function truncNormal()
+    return rand(d)
+end
+
 function getRandomPoints(n::Int, dist)::(Array{Point})
     return [Point(dist(), dist()) for _ in 1:n]
 end

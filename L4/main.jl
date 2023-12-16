@@ -6,12 +6,12 @@ using CSV
 include("utils.jl")
 
 nMin = 10
-nMax = 1000
+nMax = 6000
 step = 20
-reps = 100
+reps = 1000
 
 N = [n for n in nMin:step:nMax]
-dists = [rand, myDist]
+dists = [rand, myDist, truncNormal]
 
 struct Record
     n::Int
@@ -22,6 +22,8 @@ end
 records = Vector{Record}()
 
 for dist in dists
+    empty!(records)
+
     for n in N
         println(n)
         record = Record(n, Vector{Int}(), Vector{Float64}())
@@ -56,7 +58,7 @@ for dist in dists
     end
 
     data = reduce(hcat, [getStatistics(record) for record in records])
-
+    
     stats = DataFrame(data', ["n", "minC", "maxC", "meanC", "expC", "chbshvC", "kurtC", "minT", "maxT", "meanT", "expT"])
 
     CSV.write("$dist.csv", stats)
