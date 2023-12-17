@@ -1,20 +1,16 @@
+using Statistics
+
 struct Point
     x::Float64
     y::Float64
 end
 
-function cmpY(a::Point, b::Point)::Float64
-    return a.y - b.y
+function cmpX(a::Point, b::Point)::Float64
+    return a.x - b.x
 end
 
 function dist(a::Point, b::Point)::Float64
     return sqrt((a.x - b.x)^2 + (a.y - b.y)^2)
-end
-
-function findStrip(points::Array{Point}, midY::Float64, d::Float64)::Array{Point}
-    S = points[findall(p -> p.y >= midY - d && p.y <= midY + d, points)]
-    sort!(S, by = p -> p.x)
-    return S
 end
 
 # Internal function returning closest pair of points
@@ -27,19 +23,27 @@ function _closestPair(points::Array{Point})
     if n == 2
         return dist(points[1], points[2]), 1
     end
+
     # Divide points into two equal sets
-    m = n ÷ 2
-    dL, cmpL = _closestPair(points[1:m])
-    dR, cmpR = _closestPair(points[m+1:n])
+    y_values = [p.y for p in points]
+    medianY = median(y_values)
+
+    setL = [p for p in points if p.y <= medianY]
+    setR = [p for p in points if p.y > medianY]
+
+    dL, cmpL = _closestPair(setL)
+    dR, cmpR = _closestPair(setR)
     d = min(dL, dR)
+
     # Check point in strip 2d wide
-    midY = (points[m].y + points[m + 1].y) / 2
-    S = findStrip(points, midX, d)
+    S = [p for p in points if p.y >= medianY - d && p.y <= medianY + d]
     cmp = 0
     for i in eachindex(S)
-        for j in i+1:min(length(S), i+7)
+        j = i -1
+        while j >= 1 && cmpX(S[i], S[j]) < d
             cmp += 1
             d = min(d, dist(S[i], S[j]))
+            j -= 1
         end
     end
 
@@ -55,7 +59,7 @@ end
 function closestPairNaive(points::Array{Point})
     min_dist = Inf
     for i in eachindex(points)
-        for j in eachindex(points)
+        for j in i+1:length(points)
             min_dist = min(min_dist, dist(points[i], points[j]))
         end
     end
