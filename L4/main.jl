@@ -6,9 +6,9 @@ using CSV
 include("utils.jl")
 
 nMin = 10
-nMax = 6000
+nMax = 1000
 step = 20
-reps = 1000
+reps = 100
 
 N = [n for n in nMin:step:nMax]
 dists = [rand, myDist, truncNormal]
