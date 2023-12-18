@@ -6,9 +6,11 @@ using CSV
 include("utils.jl")
 
 nMin = 10
-nMax = 1000
+nMax = 6000
 step = 20
-reps = 10
+reps = 1000
+
+test = false
 
 N = [n for n in nMin:step:nMax]
 dists = [rand, myDist, truncNormal]
@@ -30,9 +32,11 @@ for dist in dists
         for _ in 1:reps
             points = getRandomPoints(n, dist)
             time = @elapsed d, cmps = closestPair(points)
-            dNaive = closestPairNaive(points)
-            if d != dNaive
-                println("ERROR: $d != $dNaive")
+            if test
+                dNaive = closestPairNaive(points)
+                if d != dNaive
+                    println("ERROR: $d != $dNaive")
+                end
             end
             push!(record.cmps, cmps)
             push!(record.time, time)
