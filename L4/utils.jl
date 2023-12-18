@@ -31,6 +31,7 @@ function _closestPair(points::Array{Point})
     setL = [p for p in points if p.y <= medianY]
     setR = [p for p in points if p.y > medianY]
 
+    # Recursively find minimal distances in halves
     dL, cmpL = _closestPair(setL)
     dR, cmpR = _closestPair(setR)
     d = min(dL, dR)
@@ -74,6 +75,11 @@ end
 
 d = Truncated(Normal(0, 1), 0, 1)
 function truncNormal()
+    return rand(d)
+end
+
+d = Truncated(Normal(0.5, 0.5), 0, 1)
+function truncNormalBump()
     return rand(d)
 end
 
