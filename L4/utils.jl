@@ -18,10 +18,10 @@ function _closestPair(points::Array{Point})
     n = length(points)
     # Trivial cases
     if n < 2
-        return Inf, 0
+        return Inf, 0, 0
     end
     if n == 2
-        return dist(points[1], points[2]), 1
+        return dist(points[1], points[2]), 1, 0
     end
 
     # Divide points into two equal sets
@@ -32,15 +32,15 @@ function _closestPair(points::Array{Point})
     setR = [p for p in points if p.y > medianY]
 
     # Recursively find minimal distances in halves
-    dL, cmpL = _closestPair(setL)
-    dR, cmpR = _closestPair(setR)
+    dL, cmpL, cmpxL = _closestPair(setL)
+    dR, cmpR, cmpxR = _closestPair(setR)
     d = min(dL, dR)
 
     # Check point in strip 2d wide
     S = [p for p in points if p.y >= medianY - d && p.y <= medianY + d]
     cmp = 0
     for i in eachindex(S)
-        j = i -1
+        j = i - 1
         while j >= 1 && cmpX(S[i], S[j]) < d
             cmp += 1
             d = min(d, dist(S[i], S[j]))
@@ -48,7 +48,7 @@ function _closestPair(points::Array{Point})
         end
     end
 
-    return d, cmpL + cmpR + cmp
+    return d, cmpL + cmpR + cmp, cmpxL + cmpxR + cmp
 end
 
 # External function with preprocessing
