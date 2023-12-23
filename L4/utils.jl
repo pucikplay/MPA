@@ -39,16 +39,21 @@ function _closestPair(points::Array{Point})
     # Check point in strip 2d wide
     S = [p for p in points if p.y >= medianY - d && p.y <= medianY + d]
     cmp = 0
+    cmpx = 0
     for i in eachindex(S)
         j = i - 1
         while j >= 1 && cmpX(S[i], S[j]) < d
             cmp += 1
+            cmpx += 1
             d = min(d, dist(S[i], S[j]))
             j -= 1
         end
+        if j >= 1
+            cmpx += 1
+        end
     end
 
-    return d, cmpL + cmpR + cmp, cmpxL + cmpxR + cmp
+    return d, cmpL + cmpR + cmp, cmpxL + cmpxR + cmpx
 end
 
 # External function with preprocessing
