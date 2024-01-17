@@ -2,7 +2,8 @@ using Distributions
 include("utils.jl")
 include("log_ser.jl")
 
-WHEEL_COUNT_SCALER = 50
+MIN_WHEELS = 4
+MIN_WHEEL_SIZE = 4
 
 Seq(x) = 1/(1-x)
 Cyc(x) = log(Seq(x))
@@ -22,7 +23,7 @@ function GCycWh(x)
     if rand(Bernoulli(p)) == 1
         return 0
     end
-    k = rand(truncated(LogSer(x), lower=4))
+    k = rand(truncated(LogSer(x), lower=MIN_WHEEL_SIZE))
     return k
 end
 
@@ -47,7 +48,7 @@ GPa(x) = Passenger(GCycPa(x), GCycPa(x))
 GPl(x) = Plank(GCycWh(x))
 function GWa(x)
     planks = GSeqPl(x)
-    while !(4 <= wheelCount(planks) < length(planks))
+    while !(MIN_WHEELS <= wheelCount(planks) < length(planks))
         planks = GSeqPl(x)
     end
     Wagon(planks)
