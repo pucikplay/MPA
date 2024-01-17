@@ -1,8 +1,5 @@
-using SpecialFunctions
 using Distributions
 using Random
-import Random.rand
-import SpecialFunctions.beta_inc
 import Distributions.@check_args, Distributions.@distr_support, Distributions.DiscreteUnivariateDistribution
 
 struct LogSer{T<:Real} <: DiscreteUnivariateDistribution
@@ -50,7 +47,7 @@ function Distributions.logpdf(d::LogSer, x::Real)
 end
 
 function Distributions.cdf(d::LogSer, x::Real)
-    pdf_d(a) = pdf(d,a)
+    pdf_d(a::Real) = pdf(d,a)
     insupport(d, x) ? sum(pdf_d, 1:x) : zero(d.p)
 end
 
