@@ -18,7 +18,7 @@ struct Train
 end
 
 struct ElemCounts
-    wagons::Int
+    wagons::Vector{Int}
     wheels::Vector{Int}
     planks::Vector{Int}
     wheel_sizes::Vector{Int}
@@ -29,11 +29,10 @@ end
 
 loga(p::Real) = rand(LogSer(p))
 loga(p::Real, min_size::Int) = rand(truncated(LogSer(p), lower=min_size))
-geo(p::Real) = rand(Geometric(1-p)) + 1
-geo(p::Real, min_size::Int) = rand(truncated(Geometric(1-p), lower=min_size)) + 1
+geo(p::Real) = rand(Geometric(1-p))
+geo(p::Real, min_size::Int) = rand(truncated(Geometric(1-p), lower=min_size))
 bern(p::Real) = rand(Bernoulli(p))
 poiss(p::Real) = rand(Poisson(p))
-
 
 function wheelCount(w::Vector{Plank})
     if length(w) == 0
@@ -42,14 +41,14 @@ function wheelCount(w::Vector{Plank})
     return sum(p -> sign(p.wheel), w)
 end
 
-function elemCount(t::Train)
-    wagons = length(t.wagons)
+function elemCount(t::Train)::ElemCounts
+    wagons = [length(t.wagons)]
     wheels = [wheelCount(w.planks) for w in t.wagons]
     planks = [length(w.planks) for w in t.wagons]
-    wheel_sizes = [p.wheel for w in t.wagons, p in w.planks]
+    wheel_sizes = filter(!iszero, [p.wheel for p in collect(Iterators.flatten([w.planks for w in t.wagons]))])
     passengers = [length(w.passengers) for w in t.wagons]
-    head_sizes = [p.head for w in t.wagons, p in w.passengers]
-    body_sizes = [p.body for w in t.wagons, p in w.passengers]
+    head_sizes = [p.head for p in collect(Iterators.flatten([w.passengers for w in t.wagons]))]
+    body_sizes = [p.body for p in collect(Iterators.flatten([w.passengers for w in t.wagons]))]
 
     return ElemCounts(wagons,
                       wheels,
@@ -89,3 +88,38 @@ function _trainFormat(t::Train)
 end
 
 Base.show(io::IO, t::Train) = print(io, _trainFormat(t))
+
+struct Stats
+    min::Int
+    max::Int
+    avg::Float64
+    exp::Float64
+    chbshv::Float64
+    kurt::Float64
+end
+
+struct Record
+    wagons::Stats
+    wheels::Stats
+    planks::Stats
+    wheel_sizes::Stats
+    passengers::Stats
+    head_sizes::Stats
+    body_sizes::Stats
+end
+
+function getStats(V::Vector{Int})::Stats
+    if isempty(V)
+        return Stats(0, 0, 0.0, 0.0, 0.0, 0.0)
+    end
+    min = minimum(V)
+    max = maximum(V)
+    E = mean(V)
+    diff = [abs(x - E) for x in V]
+    exp = sort(diff)[Int(ceil(0.95 * length(V)))]
+    Var = var(V)
+    chbshv = sqrt(Var/0.05)
+    kurt = kurtosis(V)
+
+    return Stats(min, max, E, exp, chbshv, kurt)
+end

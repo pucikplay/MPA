@@ -2,11 +2,11 @@ using Distributions
 include("utils.jl")
 include("log_ser.jl")
 
-MIN_WHEELS = 4
-MIN_WHEEL_SIZE = 4
-MIN_HEAD_SIZE = 3
-MIN_BODY_SIZE = 3
-MIN_WAGON_SIZE = 8
+MIN_WHEELS = 0
+MIN_WHEEL_SIZE = 1
+MIN_HEAD_SIZE = 1
+MIN_BODY_SIZE = 1
+MIN_WAGON_SIZE = 1
 
 Seq(x) = 1/(1-x)
 Cyc(x) = log(Seq(x))
@@ -31,7 +31,7 @@ end
 
 function GWa(x::Real)::Vector{Plank}
     wagon = [GPl(x) for _ in 1:geo(Pl(x))]
-    while !(MIN_WHEELS <= wheelCount(wagon) <= length(wagon))
+    while !(MIN_WHEELS <= wheelCount(wagon) <= length(wagon) && length(wagon) >= MIN_WAGON_SIZE)
         wagon = [GPl(x) for _ in 1:geo(Pl(x))]
     end
     return wagon

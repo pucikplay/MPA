@@ -1,12 +1,18 @@
 using DataStructures
 using CSV
+using Plots
 include("boltzmann_train.jl")
 
-p_values = [0.4,0.45,0.475,0.48,0.485,0.4851,0.48512]
+p_values = range(0.2, 0.485, length=100)
 data_dir = "data/"
-test_no = 100
+plots_dir = "plots"
+test_no = 10000
+
+info = ["wagons", "wheels", "planks", "wheel_sizes", "passengers", "head_sizes", "body_sizes"]
+records = Vector{Record}()
 
 for p in p_values
+    println(p)
     wagons = Vector{Int}()
     wheels = Vector{Int}()
     planks = Vector{Int}()
@@ -19,14 +25,48 @@ for p in p_values
         train = GTr(p)
         elems = elemCount(train)
 
-        push!(wagons, elems.wagons)
+        append!(wagons, elems.wagons)
         append!(wheels, elems.wheels)
         append!(planks, elems.planks)
-        append!(wheel_sizes, elem.wheel_sizes)
+        append!(wheel_sizes, elems.wheel_sizes)
         append!(passengers, elems.passengers)
-        append!(head_sizes, elem.head_sizes)
+        append!(head_sizes, elems.head_sizes)
         append!(body_sizes, elems.body_sizes)
     end
 
+    record = Record(getStats(wagons),
+                    getStats(wheels),
+                    getStats(planks),
+                    getStats(wheel_sizes),
+                    getStats(passengers),
+                    getStats(head_sizes),
+                    getStats(body_sizes))
     
+    push!(records, record)
+end
+
+println("Plotting...")
+
+for i in eachindex(info)
+    stats = [getproperty(records[j], Symbol(info[i])) for j in eachindex(p_values)]
+    plot(p_values,
+         [[s.avg for s in stats],
+          [s.min for s in stats]],
+         title=info[i],
+         labels=["min" "avg"],)
+    savefig("$plots_dir/$(info[i])")
+    plot(p_values,
+         [[s.avg for s in stats],
+          [s.avg - s.chbshv for s in stats],
+          [s.avg + s.chbshv for s in stats],
+          [s.avg - s.exp for s in stats],
+          [s.avg + s.exp for s in stats]],
+         title="$(info[i])_concentration",
+         labels=["avg" "chbshv-" "chbshv+" "exp-" "exp+"])
+    savefig("$plots_dir/$(info[i])_concentration")
+    plot(p_values,
+         [s.kurt for s in stats],
+         title="$(info[i])_kurtosis",
+         labels=["kurt"])
+    savefig("$plots_dir/$(info[i])_kurtosis")
 end
