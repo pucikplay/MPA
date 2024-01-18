@@ -3,17 +3,21 @@ using CSV
 using Plots
 include("boltzmann_train.jl")
 
-p_values = range(0.2, 0.48512, length=100)
-# p_values = range(0.55, 0.840512, length=100)
+# p_values = range(0.2, 0.485, length=100)
+p_values = range(0.5, 0.8405, length=100)
 data_dir = "data/"
-plots_dir = "plots"
-test_no = 10000
+plots_dir = "plots_capped"
+test_no = 100000
 
 info = ["wagons", "wheels", "planks", "wheel_sizes", "passengers", "head_sizes", "body_sizes"]
 records = Vector{Record}()
 
 for p in p_values
     println(p)
+    if p == 0.8405
+        global test_no = 1000
+    end
+
     wagons = Vector{Int}()
     wheels = Vector{Int}()
     planks = Vector{Int}()

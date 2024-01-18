@@ -2,13 +2,12 @@ using Distributions
 include("utils.jl")
 include("log_ser.jl")
 
-MIN_WHEEL_SIZE = 1
-MIN_HEAD_SIZE = 1
-MIN_BODY_SIZE = 1
-MIN_WAGON_SIZE = 1
+MIN_WHEEL_SIZE = 5
+MIN_HEAD_SIZE = 3
+MIN_BODY_SIZE = 4
 
 Seq(x) = 1/(1-x)
-Cyc(x, min_size) = log(Seq(x)) - sum(n -> x^n/n, 1:min_size-1; init=0)
+Cyc(x, min_size) = log(Seq(x)) - sum(n -> (x^n)/n, 1:min_size-1; init=0)
 Set(x) = exp(x)
 Pa(x) = Cyc(x,MIN_HEAD_SIZE) * Cyc(x,MIN_BODY_SIZE)
 Pl(x) = x*x * (1 + Cyc(x,MIN_WHEEL_SIZE))
@@ -35,15 +34,15 @@ function GPl_wheel(x::Real)::Plank
 end
 
 function GWa(x::Real)::Vector{Plank}
-    wagon = [GPl(x) for _ in 1:geo(Pl(x))]
-    # wagon = append!([GPl_wheel(x), GPl_wheel(x)],[GPl(x) for _ in 1:geo(Pl(x))])
+    # wagon = [GPl(x) for _ in 1:geo(Pl(x))]
+    wagon = append!([GPl_wheel(x), GPl_wheel(x)],[GPl(x) for _ in 1:geo(Pl(x))])
     return wagon
 end
 
 function GTr(x::Real)::Train
     engine = Wagon(GWa(x), Vector{Wagon}())
     wagons = Vector{Wagon}()
-    wagon_no = geo(Wa(x) * Set(Pa(x)))
+    wagon_no = geo(Wa_wheel(x) * Set(Pa(x)))
     for _ in 1:wagon_no
         wagon = GWa(x)
         passengers = [GPa(x) for _ in 1:poiss(Pa(x))]
@@ -52,4 +51,4 @@ function GTr(x::Real)::Train
     return Train(engine, wagons)
 end
 
-GTr(0.48512)
+# GTr(0.8405)
