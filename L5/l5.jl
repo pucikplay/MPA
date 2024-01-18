@@ -3,9 +3,10 @@ using CSV
 using Plots
 include("boltzmann_train.jl")
 
-# p_values = range(0.2, 0.485, length=100)
+# p_values = range(0.2, 0.4851, length=100)
 p_values = range(0.5, 0.8405, length=100)
-data_dir = "data/"
+
+# plots_dir = "plots"
 plots_dir = "plots_capped"
 test_no = 100000
 

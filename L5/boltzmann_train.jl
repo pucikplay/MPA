@@ -26,11 +26,11 @@ function GPl(x::Real)::Plank
     if bern(1/(1 + Cyc(x,1))) == 1
         return Plank(0)
     end
-    return Plank(loga(Cyc(x,MIN_WHEEL_SIZE), MIN_WHEEL_SIZE))
+    return Plank(loga(x, MIN_WHEEL_SIZE))
 end
 
 function GPl_wheel(x::Real)::Plank
-    return Plank(loga(Cyc(x,MIN_WHEEL_SIZE), MIN_WHEEL_SIZE))
+    return Plank(loga(x, MIN_WHEEL_SIZE))
 end
 
 function GWa(x::Real)::Vector{Plank}
@@ -51,4 +51,5 @@ function GTr(x::Real)::Train
     return Train(engine, wagons)
 end
 
-# GTr(0.8405)
+# GTr(0.84055)
+# Cyc(-1,1)
