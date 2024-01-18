@@ -3,7 +3,8 @@ using CSV
 using Plots
 include("boltzmann_train.jl")
 
-p_values = range(0.2, 0.485, length=100)
+p_values = range(0.2, 0.48512, length=100)
+# p_values = range(0.55, 0.840512, length=100)
 data_dir = "data/"
 plots_dir = "plots"
 test_no = 10000
@@ -53,7 +54,7 @@ for i in eachindex(info)
          [[s.avg for s in stats],
           [s.min for s in stats]],
          title=info[i],
-         labels=["min" "avg"],)
+         labels=["avg" "min"],)
     savefig("$plots_dir/$(info[i])")
     plot(p_values,
          [[s.avg for s in stats],
